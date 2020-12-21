@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="MavenChat" uuid="a0db52f7-7c91-4349-bdf7-40e9bdba06d2">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\Николай\IdeaProjects\MavenChat\server\MavenChat.db</jdbc-url>
+    </data-source>
+  </component>
+</project>
