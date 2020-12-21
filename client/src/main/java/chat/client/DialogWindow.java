@@ -29,9 +29,44 @@ public class DialogWindow extends JFrame
 
     private void showDialogWindow() throws IOException {
         windowSetting();
+        JMenuBar menuBar = new JMenuBar();
+        JMenu file = new JMenu("File");
+        JMenuItem setting = new JMenuItem("Setting");
+        setting.addActionListener(e -> {
+
+            JTextField newNicknameField = new JTextField();
+            Object[] message = {
+                    "New nickname:", newNicknameField,
+            };
+            int option = JOptionPane.showConfirmDialog(null, message, "Login", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION)
+            {
+                try {
+                    toClientHandler.writeUTF("/changeNickname " + newNicknameField.getText() + " ");
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        });
+        JMenuItem exit = new JMenuItem("Exit");
+        exit.addActionListener(e -> System.exit(1));
+        file.add(setting);
+        file.add(exit);
+        menuBar.add(file);
+        setJMenuBar(menuBar);
+
         messageAreaSetting();
         inputPanelSetting();
+        userListArea();
+        setVisible(true);
+    }
 
+    private void reloadUserListArea() throws IOException {
+        userList.removeAll();
+        userListArea();
+        setVisible(true);
+    }
+    private void userListArea() throws IOException {
 
         toClientHandler.writeUTF("/getClientList");
         String[] clientList = (fromClientHandler.readUTF()).split(" ");
@@ -49,9 +84,11 @@ public class DialogWindow extends JFrame
             }
             JScrollPane UserScroll = new JScrollPane(userList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             add(UserScroll, BorderLayout.WEST);
+
         }
-        setVisible(true);
+
     }
+
     private class ConversationListener implements ActionListener
     {
         String companionNickname;
@@ -69,6 +106,7 @@ public class DialogWindow extends JFrame
             setTitle("Dialog with " + companion);
             if(e.getActionCommand().equals("General chat"))
             {
+                companion = "";
                 setTitle("General chat");
 
             }
@@ -120,11 +158,7 @@ public class DialogWindow extends JFrame
                             String msgFromServer = fromClientHandler.readUTF();
                             if (msgFromServer.equals("/UserIsExist"))
                             {
-
                                 showDialogWindow();
-
-
-
                                 break;
                             }
                                 showLoginWindow();
@@ -133,9 +167,16 @@ public class DialogWindow extends JFrame
                         {
                             try{
                                 String msgFromServer = fromClientHandler.readUTF();
-                                if (!messageArea.getText().equals(""))
-                                    messageArea.append(System.lineSeparator());
-                                messageArea.append(msgFromServer);
+                                String[] s = msgFromServer.split(" ",3);
+                                if(s[0].equals("/reloadUserList"))
+                                {
+                                    reloadUserListArea();
+                                }
+                                else{
+                                    if (!messageArea.getText().equals(""))
+                                        messageArea.append(System.lineSeparator());
+                                    messageArea.append(msgFromServer);
+                                }
 
                             } catch (IOException e) {
                                 e.printStackTrace();

@@ -30,6 +30,10 @@ public class Server {
     public void subscribe(ClientHandler client) {
         clients.put(client.getNickname(), client);
     }
+    public boolean isNickInChat(String nickname) {
+        return clients.containsKey(nickname);
+    }
+
     public void unsubscribe(ClientHandler client) {
         clients.remove(client.getNickname());
     }

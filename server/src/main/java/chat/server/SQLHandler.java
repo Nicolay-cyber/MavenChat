@@ -18,6 +18,17 @@ public class SQLHandler
         }
     }
 
+    public static void changeNickname(String oldNickname, String newNickname)
+    {
+        try{
+            ResultSet rs = statement.executeQuery("UPDATE users SET nickname = '" + newNickname + "' WHERE  nickname = '" + oldNickname + "'");
+        }
+     catch (SQLException e)
+     {
+        e.printStackTrace();
+    }
+
+    }
     public static void disconnect()
     {
         try {
