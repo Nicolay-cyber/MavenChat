@@ -71,10 +71,11 @@ public class ClientHandler {
                     }
                     if(clientMsg.contains("/w"))
                     {
-                        String[] s = clientMsg.split(" ");
+                        String[] s = clientMsg.split(" ",3);
                         if(s.length >= 3 && s[0].equals("/w"))
                         {
-                            server.sendMsgTo(s[1], nickname + ":" + clientMsg.substring(s[1].length() + 3));
+                            server.sendMsgTo(s[1], nickname + ": " + s[2]);
+                            server.sendMsgTo(nickname, nickname + ": " + s[2]);
                         }
                     }
                     else{

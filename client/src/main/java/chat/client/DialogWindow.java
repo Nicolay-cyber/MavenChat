@@ -1,11 +1,9 @@
 package chat.client;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -18,8 +16,8 @@ public class DialogWindow extends JFrame
     private final JButton send = new JButton("Send");
     private final Action enter = new SendListener();
     private Socket socket;
-    private DataOutputStream toServer;
-    private DataInputStream fromServer;
+    private DataOutputStream toClientHandler;
+    private DataInputStream fromClientHandler;
 
 
 
@@ -58,11 +56,11 @@ public class DialogWindow extends JFrame
         int option = JOptionPane.showConfirmDialog(null, message, "Login", JOptionPane.YES_NO_OPTION);
         if (option == JOptionPane.YES_OPTION)
         {
-            toServer.writeUTF("/userChecking " + loginField.getText() + " " + passwordField.getText());
+            toClientHandler.writeUTF("/userChecking " + loginField.getText() + " " + passwordField.getText());
         }
         else if(option == JOptionPane.NO_OPTION)
         {
-            toServer.writeUTF("/userRegistration " + loginField.getText() + " " + passwordField.getText());
+            toClientHandler.writeUTF("/userRegistration " + loginField.getText() + " " + passwordField.getText());
         }
         else
         {
@@ -76,8 +74,8 @@ public class DialogWindow extends JFrame
             if (socket == null || socket.isClosed())
             {
                 socket = new Socket("localhost", 8189);
-                toServer = new DataOutputStream(socket.getOutputStream());
-                fromServer = new DataInputStream(socket.getInputStream());
+                toClientHandler = new DataOutputStream(socket.getOutputStream());
+                fromClientHandler = new DataInputStream(socket.getInputStream());
                 showLoginWindow();
 
                 new Thread(() ->
@@ -85,7 +83,7 @@ public class DialogWindow extends JFrame
                     try {
                         while (true)
                         {
-                            String msgFromServer = fromServer.readUTF();
+                            String msgFromServer = fromClientHandler.readUTF();
                             if (msgFromServer.equals("/UserIsExist"))
                             {
                                 showDialogWindow();
@@ -99,7 +97,7 @@ public class DialogWindow extends JFrame
                         while (true)
                         {
                             try{
-                                String msgFromServer = fromServer.readUTF();
+                                String msgFromServer = fromClientHandler.readUTF();
                                 if (!messageArea.getText().equals(""))
                                     messageArea.append(System.lineSeparator());
                                 messageArea.append(msgFromServer);
@@ -123,12 +121,12 @@ public class DialogWindow extends JFrame
 
     private void closeAllStreams() {
         try {
-            fromServer.close();
+            fromClientHandler.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            toServer.close();
+            toClientHandler.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -147,7 +145,7 @@ public class DialogWindow extends JFrame
             if(!inputMessage.getText().equals(""))
             {
                 try {
-                    toServer.writeUTF(inputMessage.getText());
+                    toClientHandler.writeUTF(inputMessage.getText());
                     inputMessage.setText("");
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
@@ -213,7 +211,7 @@ public class DialogWindow extends JFrame
             @Override
             public void windowClosed(WindowEvent e) {
                 try {
-                    toServer.writeUTF("/end");
+                    toClientHandler.writeUTF("/end");
                     System.exit(1);
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
