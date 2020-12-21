@@ -38,22 +38,22 @@ public class ClientHandler {
                         if(nickFromDB != null)
                         {
                             sendMsg("/UserIsExist");
-                            server.subscribe(this);
                             nickname = nickFromDB;
+                            server.subscribe(this);
                             break;
                         }
                         else{
                             sendMsg("/UserIsNotExist");
                         }
                     }
-                    else if(clientMsg.length >= 3 && clientMsg[0].equals("/userRegistration"))
+                    if(clientMsg.length >= 3 && clientMsg[0].equals("/userRegistration"))
                     {
                         String nickFromDB = SQLHandler.registerUser(clientMsg[1], clientMsg[2]);
                         if(nickFromDB != null)
                         {
                             sendMsg("/UserIsExist");
-                            server.subscribe(this);
                             nickname = nickFromDB;
+                            server.subscribe(this);
                             break;
                         }
                         else{
@@ -65,17 +65,24 @@ public class ClientHandler {
                 while (true)
                 {
                     String clientMsg = fromClient.readUTF();
-                    System.out.println(clientMsg);
+
+                    if(clientMsg.equals("/getClientList"))
+                    {
+                        String nicknamesList = SQLHandler.getAllNicknames();
+                        server.sendMsgTo(nickname, "/ClientList " + nicknamesList);
+                    }
+                    else
                     if (clientMsg.equals("/end")) {
                         break;
                     }
+                    else
                     if(clientMsg.contains("/w"))
                     {
                         String[] s = clientMsg.split(" ",3);
                         if(s.length >= 3 && s[0].equals("/w"))
                         {
-                            server.sendMsgTo(s[1], nickname + ": " + s[2]);
-                            server.sendMsgTo(nickname, nickname + ": " + s[2]);
+                            server.sendMsgTo(s[1], "From " + nickname + ": " + s[2]);
+                            server.sendMsgTo(nickname, "To " + nickname + ": " + s[2]);
                         }
                     }
                     else{
@@ -112,7 +119,11 @@ public class ClientHandler {
     }
 
 
-    public void sendMsg(String msg) throws IOException {
-        toClient.writeUTF(msg);
+    public void sendMsg(String msg)  {
+        try {
+            toClient.writeUTF(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -36,12 +36,25 @@ public class SQLHandler
             return null;
         }
     }
+    public static String getAllNicknames()
+    {
+        StringBuilder clientList = new StringBuilder();
+        try
+        {
+            ResultSet rs = statement.executeQuery("SELECT * FROM users");
+            while(rs.next()){
+                clientList.append(rs.getString("nickname") + " ");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return clientList.toString();
+    }
     public static String getNickByLoginAndPassword(String login, String password)
     {
         try {
             ResultSet rs = statement.executeQuery("SELECT nickname FROM users WHERE login ='" + login + "' AND password = '" + password + "'");
             if (rs.next()) {
-                System.out.println(rs.getString("nickname"));
                 return rs.getString("nickname");
             }
         } catch (SQLException e) {

@@ -3,16 +3,17 @@ package chat.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Vector;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
-    private Vector<ClientHandler> clients;
+    private Map<String, ClientHandler> clients;
     public Server()
     {
         try {
             SQLHandler.connect();
             ServerSocket serverSocket = new ServerSocket(8189);
-            clients = new Vector<>();
+            clients = new ConcurrentHashMap<>();
             while(true)
             {
                 Socket socket = serverSocket.accept();
@@ -27,18 +28,20 @@ public class Server {
         }
     }
     public void subscribe(ClientHandler client) {
-        clients.add(client);
+        clients.put(client.getNickname(), client);
     }
     public void unsubscribe(ClientHandler client) {
-        clients.remove(client);
+        clients.remove(client.getNickname());
     }
-    public void broadcastMsg(String msg) throws IOException {
-        for (ClientHandler c : clients) {
+    public void broadcastMsg(String msg)
+    {
+        for (ClientHandler c : clients.values()) {
             c.sendMsg(msg);
         }
     }
-    public void sendMsgTo(String companionNickname, String msg) throws IOException {
-        for (ClientHandler c : clients) {
+    public void sendMsgTo(String companionNickname, String msg)
+    {
+        for (ClientHandler c : clients.values()) {
             if(c.getNickname().equals(companionNickname))
             c.sendMsg(msg);
         }

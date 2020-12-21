@@ -18,6 +18,7 @@ public class DialogWindow extends JFrame
     private Socket socket;
     private DataOutputStream toClientHandler;
     private DataInputStream fromClientHandler;
+    private String companion = "";
 
 
 
@@ -31,17 +32,50 @@ public class DialogWindow extends JFrame
         messageAreaSetting();
         inputPanelSetting();
 
-/*        toServer.writeUTF("/getClientList");
 
-        String[] clientList = (fromServer.readUTF()).split(" ");
-        for(String user: clientList)
+        toClientHandler.writeUTF("/getClientList");
+        String[] clientList = (fromClientHandler.readUTF()).split(" ");
+
+        if(clientList[0].equals("/ClientList"))
         {
-            userList.add(new Button(user));
+            JButton generalChat = (new JButton("General chat"));
+            generalChat.addActionListener(new ConversationListener());
+            userList.add(generalChat);
+            for (int i = 1; i < clientList.length; i++)
+            {
+                JButton otherUser = new JButton(clientList[i]);
+                otherUser.addActionListener(new ConversationListener(clientList[i]));
+                userList.add(otherUser);
+            }
+            JScrollPane UserScroll = new JScrollPane(userList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            add(UserScroll, BorderLayout.WEST);
         }
-        add(userList,BorderLayout.WEST);*/
-
         setVisible(true);
     }
+    private class ConversationListener implements ActionListener
+    {
+        String companionNickname;
+        public ConversationListener(String companionNickname) {
+            this.companionNickname = companionNickname;
+        }
+        public ConversationListener() {
+        }
+
+
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            companion = companionNickname;
+            setTitle("Dialog with " + companion);
+            if(e.getActionCommand().equals("General chat"))
+            {
+                setTitle("General chat");
+
+            }
+
+        }
+    }
+
 
     private void showLoginWindow() throws IOException {
 
@@ -86,6 +120,7 @@ public class DialogWindow extends JFrame
                             String msgFromServer = fromClientHandler.readUTF();
                             if (msgFromServer.equals("/UserIsExist"))
                             {
+
                                 showDialogWindow();
 
 
@@ -145,7 +180,11 @@ public class DialogWindow extends JFrame
             if(!inputMessage.getText().equals(""))
             {
                 try {
-                    toClientHandler.writeUTF(inputMessage.getText());
+                    if(!companion.equals(""))
+                    toClientHandler.writeUTF("/w " + companion + " " + inputMessage.getText());
+                    else
+                        toClientHandler.writeUTF(inputMessage.getText());
+
                     inputMessage.setText("");
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
@@ -224,7 +263,8 @@ public class DialogWindow extends JFrame
         setBackground(Color.DARK_GRAY);
         setBounds(500, 200, 600, 600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("chat");
+        setTitle("General chat");
+
     }
 
 }
