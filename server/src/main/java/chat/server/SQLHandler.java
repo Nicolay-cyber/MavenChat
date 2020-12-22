@@ -18,16 +18,33 @@ public class SQLHandler
         }
     }
 
-    public static void changeNickname(String oldNickname, String newNickname)
+    public static boolean changeNicknameAndLogin(String oldNickname, String newNickname, String newLogin)
     {
         try{
-            ResultSet rs = statement.executeQuery("UPDATE users SET nickname = '" + newNickname + "' WHERE  nickname = '" + oldNickname + "'");
+            statement.executeUpdate("UPDATE users SET nickname = '" + newNickname + "', login = '" + newLogin + "' WHERE  nickname = '" + oldNickname + "'");
+            return true;
         }
-     catch (SQLException e)
-     {
-        e.printStackTrace();
+         catch (SQLException e)
+        {
+         e.printStackTrace();
+         return false;
+        }
     }
-
+    public static boolean changePassword(String nickname, String oldPassword, String newPassword)
+    {
+        try{
+            ResultSet rs = statement.executeQuery("SELECT password FROM users WHERE nickname = '" + nickname + "'");
+            if(rs.getString("password").equals(oldPassword)){
+                statement.executeUpdate("UPDATE users SET password = '" + newPassword + "' WHERE  nickname = '" + nickname + "'");
+                return true;
+            }
+            return false;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
     public static void disconnect()
     {
@@ -40,7 +57,8 @@ public class SQLHandler
     public static String registerUser(String login, String password)
     {
         try{
-                ResultSet rs = statement.executeQuery("INSERT INTO users (login, password, nickname) VALUES ('" + login + "', '" + password + "', '" + login + "')");
+                ResultSet rs = statement.executeQuery("INSERT INTO users (login, password, nickname) VALUES ('"
+                        + login + "', '" + password + "', '" + login + "')");
                 return rs.getString("nickname");
         }
         catch (SQLException e){

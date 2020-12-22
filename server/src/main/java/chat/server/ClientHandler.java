@@ -1,14 +1,12 @@
 package chat.server;
 
+import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
 public class ClientHandler {
-    private Server server;
-    private Socket socket;
-
     private final DataOutputStream toClient;
     private final DataInputStream fromClient;
     private String nickname;
@@ -19,8 +17,6 @@ public class ClientHandler {
 
     public ClientHandler(Server server, Socket client) throws IOException
     {
-        this.server = server;
-        this.socket = client;
         fromClient = new DataInputStream(client.getInputStream());
         toClient = new DataOutputStream(client.getOutputStream());
         new Thread(() ->
@@ -35,9 +31,9 @@ public class ClientHandler {
                         String nickFromDB = SQLHandler.getNickByLoginAndPassword(clientMsg[1], clientMsg[2]);
                         if(nickFromDB != null && !server.isNickInChat(nickFromDB))
                         {
-                            sendMsg("/UserIsExist");
                             nickname = nickFromDB;
                             server.subscribe(this);
+                            sendMsg("/UserIsExist " + nickname);
                             break;
                         }
                         else{
@@ -49,9 +45,9 @@ public class ClientHandler {
                         String nickFromDB = SQLHandler.registerUser(clientMsg[1], clientMsg[2]);
                         if(nickFromDB != null)
                         {
-                            sendMsg("/UserIsExist");
                             nickname = nickFromDB;
                             server.subscribe(this);
+                            sendMsg("/UserIsExist " + nickname);
                             break;
                         }
                         else{
@@ -69,12 +65,24 @@ public class ClientHandler {
                     String[] s = clientMsg.split(" ",3);
                     switch (s[0])
                     {
-                        case "/changeNickname":
+                        case "/changeNicknameAndLogin":
                         {
-                            SQLHandler.changeNickname(nickname, s[1]);
-                            String nicknamesList = SQLHandler.getAllNicknames();
-                            server.broadcastMsg("/reloadUserList " + nicknamesList);
+                            if(SQLHandler.changeNicknameAndLogin(nickname, s[1], s[2]))
+                            {
+                                server.broadcastMsg("/reloadUserList " + nickname + " " + s[1]);
+                                server.sendMsgTo(nickname, "/newNicknameAndLogin " + s[1] + " " + s[2]);
+                                nickname = s[1];
+                            }
                             break;
+                        }
+                        case "/changePassword":
+                        {
+                            if(SQLHandler.changePassword(nickname, s[1], s[2]))
+                            {
+                                JOptionPane.showMessageDialog(null, "Password is changed");
+                            }
+                            break;
+
                         }
                         case "/w":
                         {
@@ -87,7 +95,6 @@ public class ClientHandler {
                             String nicknamesList = SQLHandler.getAllNicknames();
                             server.sendMsgTo(nickname, "/ClientList " + nicknamesList);
                             break;
-
                         }
                         default:
                         {
