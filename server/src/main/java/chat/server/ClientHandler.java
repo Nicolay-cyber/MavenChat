@@ -65,6 +65,17 @@ public class ClientHandler {
                     String[] s = clientMsg.split(" ",3);
                     switch (s[0])
                     {
+                        case "/loadChat":
+                        {
+                            server.sendMsgTo(nickname, "/loadDialog " + SQLHandler.loadDialog(s[1], s[2]));
+                            break;
+                        }
+                        case "/saveDialog":
+                        {
+                            SQLHandler.saveDialog(s[1], s[2], s[3]);
+                            break;
+                        }
+
                         case "/changeNicknameAndLogin":
                         {
                             if(SQLHandler.changeNicknameAndLogin(nickname, s[1], s[2]))

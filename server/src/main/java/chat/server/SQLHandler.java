@@ -17,6 +17,29 @@ public class SQLHandler
             e.printStackTrace();
         }
     }
+    public static String loadDialog(String firstParticipant, String secondParticipant)
+    {
+        try
+        {
+            ResultSet rs = statement.executeQuery("SELECT " + secondParticipant + " FROM dialogs WHERE firstParticipant = '" + firstParticipant + "'" );
+            return rs.getString(secondParticipant);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+    public static void saveDialog(String firstParticipant, String secondParticipant, String dialog)
+    {
+        try
+        {
+            statement.executeUpdate("UPDATE dialogs SET " + secondParticipant + " = '" + dialog + "' WHERE  firstParticipant = '" + firstParticipant + "'");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
     public static boolean changeNicknameAndLogin(String oldNickname, String newNickname, String newLogin)
     {
@@ -91,4 +114,5 @@ public class SQLHandler
         }
         return null;
     }
+
 }

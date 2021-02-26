@@ -80,6 +80,7 @@ public class DialogWindow extends JFrame
                 {
                     toClientHandler.writeUTF("/changeNicknameAndLogin " + newNicknameField.getText() + " " + newLoginField.getText());
                 }
+                else
                 if(!OldPasswordField.getText().contains(" ") && !NewPasswordField.getText().contains(" ") &&
                         !OldPasswordField.getText().equals("") && !NewPasswordField.getText().equals(""))
                 {
