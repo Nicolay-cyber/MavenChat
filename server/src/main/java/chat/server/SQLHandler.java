@@ -1,10 +1,13 @@
 package chat.server;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SQLHandler
 {
     private static Connection connection;
     private static Statement statement;
+    private static Logger logger = Logger.getLogger("");
 
 
     public static void connect()
@@ -13,7 +16,9 @@ public class SQLHandler
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:server/MavenChat.db");
             statement = connection.createStatement();
+            logger.log(Level.SEVERE, "Database is connected");
         } catch (Exception e) {
+            logger.log(Level.SEVERE, "Database connection error");
             e.printStackTrace();
         }
     }
@@ -23,8 +28,8 @@ public class SQLHandler
         {
             ResultSet rs = statement.executeQuery("SELECT " + secondParticipant + " FROM dialogs WHERE firstParticipant = '" + firstParticipant + "'" );
             return rs.getString(secondParticipant);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         return null;
     }
@@ -71,9 +76,13 @@ public class SQLHandler
     }
     public static void disconnect()
     {
-        try {
+        try
+        {
+            logger.log(Level.SEVERE, "Database is disconnected");
             connection.close();
-        } catch (SQLException e) {
+        } catch (SQLException e)
+        {
+            logger.log(Level.SEVERE, "Database disconnection error");
             e.printStackTrace();
         }
     }
@@ -110,6 +119,7 @@ public class SQLHandler
                 return rs.getString("nickname");
             }
         } catch (SQLException e) {
+            logger.log(Level.SEVERE, "There was error while server tried to get Nick by login and password");
             e.printStackTrace();
         }
         return null;

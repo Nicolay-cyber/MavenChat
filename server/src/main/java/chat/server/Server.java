@@ -5,11 +5,23 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Formatter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class Server {
     private Map<String, ClientHandler> clients;
+    private static final Logger logger = Logger.getLogger("");
+
     public Server()
     {
+        logger.getHandlers()[0].setFormatter(new Formatter() {
+            @Override
+            public String format(LogRecord record) {
+                return record.getLevel() + ": " + record.getMessage() + " " + record.getMillis() + "\n";
+            }
+        });
         try {
             SQLHandler.connect();
             ServerSocket serverSocket = new ServerSocket(8189);
@@ -17,11 +29,11 @@ public class Server {
             while(true)
             {
                 Socket socket = serverSocket.accept();
-                System.out.println("Client is connected");
                 new ClientHandler(this,socket);
             }
         } catch (IOException e) {
             e.printStackTrace();
+            logger.log(Level.SEVERE, "Client connection error");
         }
         finally {
             SQLHandler.disconnect();
@@ -47,7 +59,9 @@ public class Server {
     {
         for (ClientHandler c : clients.values()) {
             if(c.getNickname().equals(companionNickname))
-            c.sendMsg(msg);
+            {
+                c.sendMsg(msg);
+            }
         }
     }
 

@@ -5,8 +5,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class ClientHandler {
+public class ClientHandler
+{
+    private final Logger logger = Logger.getLogger("");
     private final DataOutputStream toClient;
     private final DataInputStream fromClient;
     private String nickname;
@@ -34,9 +38,12 @@ public class ClientHandler {
                             nickname = nickFromDB;
                             server.subscribe(this);
                             sendMsg("/UserIsExist " + nickname);
+                            logger.log(Level.SEVERE, "Client " + nickname + " is connected");
                             break;
                         }
                         else{
+                            logger.log(Level.SEVERE, "There was attempt to connect through " + clientMsg[1] + " login");
+
                             sendMsg("/UserIsNotExist");
                         }
                     }
@@ -83,6 +90,8 @@ public class ClientHandler {
                                 server.broadcastMsg("/reloadUserList " + nickname + " " + s[1]);
                                 server.sendMsgTo(nickname, "/newNicknameAndLogin " + s[1] + " " + s[2]);
                                 nickname = s[1];
+                                logger.log(Level.SEVERE, "Client " + nickname + " had changed login or nickname");
+
                             }
                             break;
                         }
@@ -91,14 +100,17 @@ public class ClientHandler {
                             if(SQLHandler.changePassword(nickname, s[1], s[2]))
                             {
                                 JOptionPane.showMessageDialog(null, "Password is changed");
+                                logger.log(Level.SEVERE, "Client " + nickname + " had changed password");
                             }
                             break;
 
                         }
                         case "/w":
                         {
-                                server.sendMsgTo(s[1], "From " + nickname + ": " + s[2]);
-                                server.sendMsgTo(nickname, "To " + s[1] + ": " + s[2]);
+                            server.sendMsgTo(s[1], "From " + nickname + ": " + s[2]);
+                            server.sendMsgTo(nickname, "To " + s[1] + ": " + s[2]);
+                            logger.log(Level.SEVERE, "Client " + nickname + " sent message to " + s[1]);
+
                             break;
                         }
                         case "/getClientList":
@@ -110,13 +122,14 @@ public class ClientHandler {
                         default:
                         {
                             server.broadcastMsg(nickname + ": " + clientMsg);
+                            logger.log(Level.SEVERE, "Client " + nickname + " sent message to everyone");
                         }
                     }
 
 
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Client " + nickname + " is disconnected");
             }
             finally {
                 closeAllStreams(client);
@@ -148,6 +161,7 @@ public class ClientHandler {
         try {
             toClient.writeUTF(msg);
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "Message sending error");
             e.printStackTrace();
         }
     }
