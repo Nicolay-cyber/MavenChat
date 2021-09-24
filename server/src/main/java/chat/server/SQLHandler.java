@@ -13,8 +13,11 @@ public class SQLHandler
     public static void connect()
     {
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:server/MavenChat.db");
+            String url = "jdbc:postgresql://ec2-34-251-245-108.eu-west-1.compute.amazonaws.com:5432/d5gmno0qk5qjah?sslmode=require";
+            String user = "bmdubxlelfebxw";
+            String pass = "34730ab8628e7fbc84bf42f311641e81a54d591042e56b1d70dabd61cdeaae74";
+            Class.forName("org.postgresql.Driver");
+            connection = DriverManager.getConnection(url,user,pass);
             statement = connection.createStatement();
             logger.log(Level.SEVERE, "Database is connected");
         } catch (Exception e) {
