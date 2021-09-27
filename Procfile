@@ -1,1 +1,1 @@
-web:    java $JAVA_OPTS -jar out/artifacts/server_jar/server.jar
+web:    java $JAVA_OPTS -Dserver.port=$PORT -jar out/artifacts/server_jar/server.jar

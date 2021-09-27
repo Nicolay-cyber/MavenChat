@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class Server {
     private Map<String, ClientHandler> clients;
     private static final Logger logger = Logger.getLogger("");
-
+    private static final String PORT = System.getenv("PORT");
     public Server()
     {
         logger.getHandlers()[0].setFormatter(new Formatter() {
@@ -24,7 +24,7 @@ public class Server {
         });
         try {
             SQLHandler.connect();
-            ServerSocket serverSocket = new ServerSocket(8189);
+            ServerSocket serverSocket = new ServerSocket(Integer.valueOf(PORT));
             clients = new ConcurrentHashMap<>();
             while(true)
             {
