@@ -25,6 +25,7 @@ public class Server {
         try {
             SQLHandler.connect();
             ServerSocket serverSocket = new ServerSocket(Integer.valueOf(PORT));
+            System.out.println("Booted server.  " + Integer.parseInt(System.getenv("PORT")));
             clients = new ConcurrentHashMap<>();
             while(true)
             {
