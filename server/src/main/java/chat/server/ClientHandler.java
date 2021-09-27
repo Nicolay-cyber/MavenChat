@@ -61,6 +61,10 @@ public class ClientHandler
                             sendMsg("/UserIsNotExist");
                         }
                     }
+                    else{
+                        sendMsg("/UserIsNotExist");
+                        return;
+                    }
 
                 }
                 while (true)
