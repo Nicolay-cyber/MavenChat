@@ -216,7 +216,7 @@ public class DialogWindow extends JFrame
         try {
             if (socket == null || socket.isClosed())
             {
-                socket = new Socket("ec2-34-251-245-108.eu-west-1.compute.amazonaws.com", 53358);
+                socket = new Socket("ec2-34-251-245-108.eu-west-1.compute.amazonaws.com", 4274);
                 toClientHandler = new DataOutputStream(socket.getOutputStream());
                 fromClientHandler = new DataInputStream(socket.getInputStream());
                 showLoginWindow();

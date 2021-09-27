@@ -24,13 +24,16 @@ public class Server {
         });
         try {
             SQLHandler.connect();
-            ServerSocket serverSocket = new ServerSocket(Integer.valueOf(PORT));
-            System.out.println("Booted server.  " + Integer.parseInt(System.getenv("PORT")));
+            ServerSocket serverSocket = new ServerSocket(Integer.parseInt(PORT));
+            System.out.println("Server socket is ready");
             clients = new ConcurrentHashMap<>();
             while(true)
             {
+                System.out.println("Await client on port " + Integer.parseInt(System.getenv("PORT") + " ..."));
                 Socket socket = serverSocket.accept();
+                System.out.println("Some client is trying to connect ...");
                 new ClientHandler(this,socket);
+
             }
         } catch (IOException e) {
             e.printStackTrace();
