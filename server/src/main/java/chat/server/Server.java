@@ -29,7 +29,7 @@ public class Server {
             clients = new ConcurrentHashMap<>();
             while(true)
             {
-                System.out.println("Await client on port " + Integer.parseInt(System.getenv("PORT") + " ..."));
+                System.out.println("Await client on port " + Integer.parseInt(System.getenv("PORT")) + " ...");
                 Socket socket = serverSocket.accept();
                 System.out.println("Some client is trying to connect ...");
                 new ClientHandler(this,socket);
